@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>流程編排所 | SOP Studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark">S</div>
+        <div>
+          <p class="eyebrow">SOP STUDIO</p>
+          <h1>流程編排所</h1>
+        </div>
+      </div>
+      <div class="topbar-meta">
+        <span class="save-state" id="saveState"><span class="status-dot"></span> 尚未儲存</span>
+        <button class="text-button save-draft-button" id="saveDraftButton">儲存草稿</button>
+        <button class="text-button" id="exportJsonButton">JSON</button>
+        <button class="text-button" id="exportMarkdownButton">MD</button>
+        <button class="text-button" id="exportZipButton">ZIP</button>
+        <input id="importJsonInput" type="file" accept="application/json,.json" hidden />
+        <button class="text-button" id="importJsonButton">載入</button>
+        <button class="text-button" id="resetDemo">重設示範</button>
+        <button class="primary-button" id="exportTop">匯出成果</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <aside class="source-panel panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">01 / 素材來源</p>
+            <h2>把流程交給我</h2>
+          </div>
+          <span class="mini-count">3 種輸入</span>
+        </div>
+
+        <label class="field-label" for="topic">這份 SOP 要教什麼？</label>
+        <textarea id="topic" class="topic-input" rows="3">如何查詢自己的准考證號碼</textarea>
+
+        <div class="input-tabs" role="tablist" aria-label="素材輸入方式">
+          <button class="input-tab active" data-tab="screenshots">截圖</button>
+          <button class="input-tab" data-tab="url">網址</button>
+          <button class="input-tab" data-tab="recording">錄影</button>
+        </div>
+
+        <section class="input-pane active" id="screenshots-pane">
+          <label class="upload-zone" for="imageInput">
+            <span class="upload-icon">＋</span>
+            <strong>拖曳截圖到這裡</strong>
+            <span>或點擊上傳 PNG、JPG</span>
+            <input id="imageInput" type="file" accept="image/png,image/jpeg" multiple hidden />
+          </label>
+          <div class="asset-list" id="assetList">
+            <div class="asset-item demo-asset">
+              <div class="asset-thumb screen-thumb"><span>exam.taipei.gov.tw</span><b>准考證查詢</b></div>
+              <div class="asset-copy"><strong>查詢頁面.png</strong><span>已加入示範素材</span></div>
+              <button class="remove-asset" aria-label="移除素材">×</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="input-pane" id="url-pane">
+          <label class="field-label" for="urlInput">公開頁面網址</label>
+          <div class="inline-field"><input id="urlInput" type="url" placeholder="https://example.com/流程頁面" /><button id="addUrl">加入</button></div>
+          <p class="helper-text">第一版只處理不需登入的公開網址。</p>
+        </section>
+
+        <section class="input-pane" id="recording-pane">
+          <label class="upload-zone compact" for="videoInput">
+            <span class="upload-icon">＋</span><strong>加入螢幕錄影</strong><span>MP4、MOV，系統會抓取關鍵畫面</span>
+            <input id="videoInput" type="file" accept="video/mp4,video/quicktime" hidden />
+          </label>
+          <div class="video-status" id="videoStatus" hidden></div>
+          <div class="video-capture" id="videoCapture" hidden>
+            <video id="videoPreview" controls></video>
+            <div class="timeline-row"><span id="currentTimeLabel">0.0 秒</span><input id="frameScrubber" type="range" min="0" max="0" step="0.1" value="0" /><span id="durationLabel">0.0 秒</span></div>
+            <button class="capture-button" id="captureFrame">擷取目前這一格</button>
+          </div>
+          <div class="video-keyframes" id="videoKeyframes"></div>
+          <div class="transcript-panel">
+            <div class="transcript-heading"><strong>語音逐字稿</strong><span id="transcriptStatus">尚未轉錄</span></div>
+            <p>影片有聲音時，Whisper 會把說明轉成帶時間點的文字，協助切分步驟。</p>
+            <button class="capture-button" id="transcribeButton" disabled>轉錄影片聲音</button>
+            <div class="transcript-list" id="transcriptList"></div>
+            <button class="apply-transcript-button" id="applyTranscript" disabled>套用成步驟編輯草稿</button>
+          </div>
+        </section>
+
+        <div class="generation-note">
+          <span class="spark">✦</span>
+          <div><strong>AI 會幫你整理，不會亂改畫面</strong><p>真實截圖是主角；需要時才補充主題素材。</p></div>
+        </div>
+        <button class="generate-button" id="generateBtn"><span>✦</span> 產生 5～10 個步驟</button>
+      </aside>
+
+      <section class="editor-panel panel">
+        <div class="editor-header">
+          <div><p class="section-kicker">02 / 步驟編輯</p><h2>准考證號碼查詢</h2></div>
+          <div class="editor-actions"><span class="step-summary" id="stepSummary">共 6 個步驟</span><button class="ghost-button" id="addStep">＋ 新增步驟</button></div>
+        </div>
+        <div class="workflow-line"><span class="workflow-done">素材</span><span class="workflow-arrow">→</span><span class="workflow-current">步驟</span><span class="workflow-arrow">→</span><span>模板</span><span class="workflow-arrow">→</span><span>輸出</span></div>
+        <div class="step-list" id="stepList"></div>
+      </section>
+
+      <aside class="preview-panel panel">
+        <div class="panel-heading preview-heading"><div><p class="section-kicker">03 / 即時預覽</p><h2 id="previewTitle">教學講義</h2></div><button class="more-button" aria-label="更多選項">•••</button></div>
+        <div class="template-switcher" role="tablist" aria-label="預覽模板">
+          <button class="template-button active" data-template="guide">簡潔講義</button>
+          <button class="template-button" data-template="comic">漫畫對話</button>
+          <button class="template-button" data-template="social">社群圖卡</button>
+        </div>
+        <div class="visual-tools" aria-label="視覺圖層工具">
+          <span class="tool-label">畫面標示</span>
+          <button class="visual-tool active" data-visual="plain">無</button>
+          <button class="visual-tool" data-visual="arrow">箭頭</button>
+          <button class="visual-tool" data-visual="box">紅框</button>
+          <button class="visual-tool" data-visual="number">編號</button>
+          <button class="visual-tool" data-visual="focus">聚焦</button>
+        </div>
+        <div class="visual-tools frame-tools" aria-label="截圖外框工具">
+          <span class="tool-label">截圖外框</span>
+          <button class="frame-tool" data-frame="plain">原圖</button>
+          <button class="frame-tool active" data-frame="paper">紙張</button>
+          <button class="frame-tool" data-frame="browser">瀏覽器</button>
+        </div>
+        <div class="preview-stage" id="previewStage"></div>
+        <div class="preview-footer"><span><span class="live-dot"></span> 預覽同步中</span><span id="previewPage">1 / 6</span></div>
+        <div class="export-grid">
+          <button class="export-card" data-export="PDF"><span class="export-symbol">PDF</span><strong>教學講義</strong><small>列印或分享</small></button>
+          <button class="export-card" data-export="影片"><span class="export-symbol">▶</span><strong>教學影片</strong><small>旁白＋字幕腳本</small></button>
+          <button class="export-card" data-export="圖卡"><span class="export-symbol">▦</span><strong>社群圖卡</strong><small>一頁一張圖片</small></button>
+        </div>
+      </aside>
+    </main>
+    <div class="toast" id="toast" role="status"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
