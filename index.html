@@ -128,13 +128,13 @@
           <button class="frame-tool active" data-frame="paper">紙張</button>
           <button class="frame-tool" data-frame="browser">瀏覽器</button>
         </div>
+        <div class="layer-panel">
+          <div class="layer-heading"><span>圖層</span><button id="addLayerButton">＋ 新增圖層</button></div>
+          <div class="layer-list" id="layerList"></div>
+        </div>
         <div class="preview-stage" id="previewStage"></div>
         <div class="preview-footer"><span><span class="live-dot"></span> 預覽同步中</span><span id="previewPage">1 / 6</span></div>
-        <div class="export-grid">
-          <button class="export-card" data-export="PDF"><span class="export-symbol">PDF</span><strong>教學講義</strong><small>列印或分享</small></button>
-          <button class="export-card" data-export="影片"><span class="export-symbol">▶</span><strong>教學影片</strong><small>旁白＋字幕腳本</small></button>
-          <button class="export-card" data-export="圖卡"><span class="export-symbol">▦</span><strong>社群圖卡</strong><small>一頁一張圖片</small></button>
-        </div>
+        <div class="output-panel"><label for="outputFormat">輸出格式</label><div class="output-row"><select id="outputFormat"><option value="PDF">PDF 教學講義</option><option value="圖卡">PNG 社群圖卡（批次）</option><option value="ZIP">ZIP 專案包</option><option value="JSON">JSON 專案檔</option><option value="MD">Markdown 文件</option><option value="影片">影片腳本</option></select><button class="primary-button" id="runExport">開始輸出</button></div></div>
       </aside>
     </main>
     <div class="toast" id="toast" role="status"></div>
