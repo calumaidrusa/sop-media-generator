@@ -6,3 +6,5 @@ tmp/
 output/
 
 .vercel
+.env*
+.vercel-old-unavailable/
